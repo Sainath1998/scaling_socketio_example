@@ -1,6 +1,10 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 import redis from "redis";
+import dotenv from "dotenv";
+
+// Configure dotenv to load environment variables
+dotenv.config();
 
 const APPID = process.env.APPID;
 const PORT = process.env.PORT;
@@ -8,23 +12,23 @@ const PORT = process.env.PORT;
 
 const subscriber = redis.createClient({
     port      : 6379,              
-    host      : 'redis'} );
+    host      : 'localhost'} );
   
 const publisher = redis.createClient({
     port      : 6379,              
-    host      : 'redis'} );
+    host      : 'localhost'} );
 
 
 subscriber.subscribe("main_chat");
 
 subscriber.on("message", function(channel, message) {
         try{
-        console.log(`Server ${APPID} received message in channel ${channel} msg: ${message}`);
+        console.log(`Server ${APPID} received message in channel ${PORT} msg: ${message}`);
         /**
          * with io.emit we send this event to all sockets. To send to certain room
          * use io.to('room_id').emit()
          */
-        io.emit('answer', JSON.parse(message))
+        io.emit('answer', message)
         }
         catch(ex){
           console.log("ERR::" + ex)
